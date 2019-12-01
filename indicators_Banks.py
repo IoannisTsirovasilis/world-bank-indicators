@@ -136,8 +136,8 @@ def main():
     # different results
     # process_indicators(indicators, countries, countries_names)
 
-    content = pd.read_csv("files/best_ten_indicators.txt", header=None)
-    correlations = calculate_correlations(dict(zip(content[0], content[0])), countries)
+    content = pd.read_csv("files/best_indicators_names.txt", header=None)
+    correlations = calculate_correlations(dict(zip(content[0], content[1])), countries)
 
     plot_results(correlations)
 

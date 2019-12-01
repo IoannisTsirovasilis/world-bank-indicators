@@ -1,0 +1,10 @@
+NY.GNP.MKTP.PP.KD,GNI PPP (Current 2011 International $)
+NY.GDP.MKTP.PP.KD,GDP PPP (Constant 2011 International $)
+FM.AST.DOMS.CN,Net Domestic Credit
+NY.GNP.MKTP.PP.CD,GNI PPP (Current International $)
+NY.GDP.MKTP.PP.CD,GDP PPP (Current International $)
+NY.GNP.MKTP.KD,GNI
+NE.DAB.TOTL.KD,Gross National Exprenditure
+NY.GDP.FCST.KD,Gross Value Added At Basic Prices
+NY.GDP.MKTP.KD,GDP Growth
+NY.ADJ.NNTY.KD,Adjusted Net National Income
