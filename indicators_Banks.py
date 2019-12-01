@@ -122,6 +122,30 @@ def plot_results(countries):
     plt.show()
 
 
+def plot_best_indicators(countries, countries_names):
+    inds = ["NY.ADJ.NNTY.KD", "NE.DAB.TOTL.KD"]
+
+    for i in inds:
+        fig, ax = plt.subplots()
+        res = wb.get_data(i, country=countries, pandas=True)
+        x = list(range(2019, 1959, -1))
+        colors = ['r', 'k', 'y', 'b']
+        c = 0
+        for cn in countries_names:
+            y = []
+            for year in x:
+                data = [res[k] for k in res.keys() if k[1] == str(year) and k[0] == cn]
+                y.append(data[0])
+            ax.plot(x, y, color=colors[c], label=cn)
+            c += 1
+
+        plt.title('Line Graph')
+        plt.xlabel('Year')
+        plt.ylabel('Indicator Value')
+        ax.legend()
+        plt.show()
+
+
 def main():
     countries = ["DEU", "GRC", "CHE", "ESP"]
     file_path = "data/codes.csv"
@@ -139,7 +163,9 @@ def main():
     content = pd.read_csv("files/best_indicators_names.txt", header=None)
     correlations = calculate_correlations(dict(zip(content[0], content[1])), countries)
 
-    plot_results(correlations)
+    # plot_results(correlations)
+
+    plot_best_indicators(countries, countries_names)
 
 
 if __name__ == "__main__":
