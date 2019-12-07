@@ -27,4 +27,4 @@ for i in unique_indicators:
         best_indicators.append({i:})
 
 
-print(list_indicators)
+print(best_indicators)

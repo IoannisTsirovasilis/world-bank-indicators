@@ -13,7 +13,6 @@ def output_to_file(file_path, data_structure, key_name="Key", value_name="Value"
                 print("{0}: {1} - {2}: {3}".format(key_name, k, value_name, v))
                 f.write("{0},{1}\n".format(k, v))
         elif isinstance(data_structure, list):
-            print("Tuple")
             for item in data_structure:
                 f.write("{0},{1}\n".format(item[0], item[1]))
 
@@ -123,9 +122,12 @@ def plot_results(countries):
 
 
 def plot_best_indicators(countries, countries_names):
-    inds = ["NY.ADJ.NNTY.KD", "NE.DAB.TOTL.KD"]
+    inds = {
+                "NY.ADJ.NNTY.KD": "Adjusted net national income (annual % growth)",
+                "NE.DAB.TOTL.KD": "Gross national expenditure (constant 2010 US$)"
+            }
 
-    for i in inds:
+    for i, v in inds.items():
         fig, ax = plt.subplots()
         res = wb.get_data(i, country=countries, pandas=True)
         x = list(range(2019, 1959, -1))
@@ -141,7 +143,7 @@ def plot_best_indicators(countries, countries_names):
 
         plt.title('Line Graph')
         plt.xlabel('Year')
-        plt.ylabel('Indicator Value')
+        plt.ylabel(v)
         ax.legend()
         plt.show()
 
