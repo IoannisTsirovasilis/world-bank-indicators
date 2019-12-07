@@ -100,30 +100,20 @@ def calculate_correlations(indicators, countries):
     return result
 
 
-def plot_results(countries):
-    fig, axs = plt.subplots(2, 2, figsize=(20, 15))
-    plt.suptitle('Correlation heatmap for the selected indicator codes', fontsize=20)
-    mask = np.zeros_like(countries["Greece"], dtype=np.bool)
-    mask[np.triu_indices_from(mask)] = True
-    cmap = sns.diverging_palette(220, 20, as_cmap=True)
-
-    sns.heatmap(countries["Greece"], mask=mask, cmap=cmap, linewidths=.5, square=True, ax=axs[0][0])
-    sns.heatmap(countries["Germany"], mask=mask, cmap=cmap, linewidths=.5, square=True, ax=axs[0][1])
-    sns.heatmap(countries["Switzerland"], mask=mask, cmap=cmap, linewidths=.5, square=True, ax=axs[1][0])
-    sns.heatmap(countries["Spain"], mask=mask, cmap=cmap, linewidths=.5, square=True, ax=axs[1][1])
-
-    axs[0][0].set_title('Greece', fontsize=18)
-    axs[0][1].set_title('Germany', fontsize=18)
-    axs[1][0].set_title('Switzerland', fontsize=18)
-    axs[1][1].set_title('Spain', fontsize=18)
-
-    plt.subplots_adjust(hspace=0.6)
-    plt.show()
+def plot_results(countries, countries_names):
+    for cn in countries_names:
+        fig, axs = plt.subplots()
+        mask = np.zeros_like(countries[cn], dtype=np.bool)
+        mask[np.triu_indices_from(mask)] = True
+        cmap = sns.diverging_palette(220, 20, as_cmap=True)
+        sns.heatmap(countries[cn], mask=mask, cmap=cmap, linewidths=.5, square=True)
+        axs.set_title(cn)
+        plt.show()
 
 
 def plot_best_indicators(countries, countries_names):
     inds = {
-                "NY.ADJ.NNTY.KD": "Adjusted net national income (annual % growth)",
+                "NY.GDP.MKTP.PP.CD": "GDP PPP (current international $)",
                 "NE.DAB.TOTL.KD": "Gross national expenditure (constant 2010 US$)"
             }
 
@@ -148,6 +138,64 @@ def plot_best_indicators(countries, countries_names):
         plt.show()
 
 
+def plot_mean_completeness(countries_names):
+    results = {}
+    for c in countries_names:
+        results[c] = 0
+    with open("files/completeness_ratios.txt", "r") as f:
+        content = f.readlines()
+    length = len(content) / 4
+    for line in content:
+        temp = line.split(",")
+        for c in countries_names:
+            if c in temp[0]:
+                results[c] += float(temp[1]) / length
+    ind = range(len(countries_names))
+    width = 0.35
+    plt.bar(ind, results.values(), width)
+
+    plt.ylabel('Percentage')
+    plt.title('Average Completeness')
+    plt.xticks(ind, countries_names)
+    plt.yticks(range(0, 101, 5))
+
+    plt.show()
+
+
+def plot_best_ten_indicators_mean_completeness():
+    with open("files/best_ten_indicators.txt", "r") as f:
+        content = f.readlines()
+    best_ten_indicators = [x.split(",")[0] for x in content]
+
+    with open("files/biggest_cohesive_sets.txt", "r") as f:
+        content = f.readlines()
+
+    results = {}
+    for line in content:
+        index = line.index(",")
+        line = line.replace(",", ";", 1)
+        ind = line.split(";")
+        if ind[0] in best_ten_indicators:
+            temp = ind[1].replace("[", "").replace("]", "").replace(" ", "").split(",")
+            results[ind[0]] = [int(x) for x in temp]
+    x = []
+    y = []
+    c = 0
+    for k, v in results.items():
+        for i in v:
+            if c % 2 == 0:
+                x.append("\n{0}".format(k))
+            else:
+                x.append(k)
+            y.append(i)
+        c += 1
+    fig, ax = plt.subplots()
+
+    ax.plot(x, y, 'o')
+
+    plt.show()
+
+
 def main():
     countries = ["DEU", "GRC", "CHE", "ESP"]
     file_path = "data/codes.csv"
@@ -160,14 +208,18 @@ def main():
 
     # This is used to generate the 3 files in files/ directory. No need to rerun it unless you want to extract
     # different results
-    # process_indicators(indicators, countries, countries_names)
+    process_indicators(indicators, countries, countries_names)
 
     content = pd.read_csv("files/best_indicators_names.txt", header=None)
     correlations = calculate_correlations(dict(zip(content[0], content[1])), countries)
 
-    # plot_results(correlations)
+    plot_results(correlations, countries_names)
 
     plot_best_indicators(countries, countries_names)
+
+    plot_mean_completeness(countries_names)
+
+    plot_best_ten_indicators_mean_completeness()
 
 
 if __name__ == "__main__":
